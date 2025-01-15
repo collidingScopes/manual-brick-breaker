@@ -1,7 +1,6 @@
 /*
 Mobile compatability, formatting, responsiveness
 Scoreboard / simple database to save high scores
-Write about text, site OG image / properties, github README
 */
 
 let lastTime = 0;

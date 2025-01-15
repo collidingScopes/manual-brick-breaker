@@ -1,0 +1,204 @@
+body {
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    background: #141D22;
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+}
+.game-container-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+.game-container {
+    position: relative;
+    width: 700px;
+    height: 700px;
+    contain: strict;
+    border: 3px solid #c3f2f5;
+    border-radius: 0px;
+}
+#gameCanvas {
+    background: #141D22;
+    will-change: transform;
+}
+#videoElement {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 160px;
+    height: 120px;
+    border: 2px solid #3a4c4e;
+    transform: scaleX(-1);
+    will-change: transform;
+}
+.stats {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #f2c2a4;
+    font-size: 18px;
+    contain: content;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.stats div {
+    background: rgba(12, 8, 22, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+.modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(12, 8, 22, 0.3);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0.9;
+}
+.modal-content {
+    background: #2a2a2a;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    color: white;
+    text-align: center;
+    contain: content;
+}
+.modal-content h2 {
+    margin-top: 0;
+    color: #0095DD;
+}
+.modal-content p {
+    margin: 15px 0;
+    line-height: 1.5;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: auto auto;
+    gap: 10px;
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    text-align: left;
+}
+.stats-grid .label {
+    font-weight: bold;
+    color: #f2c2a4;
+}
+.start-button, .restart-button {
+    background: #34A2DF;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+}
+.start-button:hover, .restart-button:hover {
+    background: #11608a;
+}
+.game-over-modal, .win-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(12, 8, 22, 0.7);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+.level-up-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #33FF99;
+    font-size: 48px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.5s;
+    text-shadow: 0 0 10px rgba(51, 255, 153, 0.5);
+    pointer-events: none;
+}
+
+#notesDiv{
+  width:99vw;
+  /* box-sizing: border-box; */
+  /*overflow: hidden;*/
+  /* padding: 10px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /*border-top: 5px solid #581845;*/
+  background-color: #151632;
+  color: white;
+}
+
+#textBox {
+  min-width: 350px;
+  max-width: 75vw;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+#linksDiv{
+  background-color: #faebf6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h2 {
+  font-size: 40px;
+}
+
+/* Styling for table with github and social links */
+
+#infoMenuTable td {
+  text-align:center;
+  border: 0;
+  padding: 20px;
+}
+
+#infoMenuTable{
+  table-layout: fixed;
+  margin: 0px;
+}
+
+a, a:visited{
+  color:rgb(161, 50, 154);
+}
+
+.socialMediaButton{
+  color:rgb(161, 50, 154);
+  font-size: 26px;
+  margin: 0;
+  padding: 4px;
+  border: none;
+  max-width: 50px;
+  max-height: 50px;
+  background-color: transparent;
+}
+
+#buyMeACoffeeButton {
+  font-size: 10px;
+}

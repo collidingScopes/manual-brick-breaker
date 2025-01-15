@@ -7,17 +7,17 @@
     <script type="text/javascript" src="dat.gui-master/build/dat.gui.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <meta property="og:title" content="Video-to-Pixel-Art" />
-    <meta property="og:description" content="Turn videos into pixel art animations in real-time" />
+    <meta property="og:title" content="Manual Brick Breaker" />
+    <meta property="og:description" content="Play brick breaker with your hands!" />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://collidingscopes.github.io/video-to-pixel-art/" />
-    <meta property="og:image" content="https://collidingscopes.github.io/video-to-pixel-art/assets/rain.png">
+    <meta property="og:url" content="https://collidingscopes.github.io/manual-brick-breaker/" />
+    <meta property="og:image" content="https://collidingscopes.github.io/manual-brick-breaker/assets/siteOGImage2.png">
     <meta property="og:image:type" content="image/png" >
-    <meta property="og:image:width" content="1200" >
-    <meta property="og:image:height" content="675" >
+    <meta property="og:image:width" content="2529" >
+    <meta property="og:image:height" content="1658" >
   
-    <link rel="icon" href="assets/siteFavicon3.png">
-    <link rel="apple-touch-icon" href="assets/siteFavicon3.png">
+    <link rel="icon" href="assets/siteFavicon.png">
+    <link rel="apple-touch-icon" href="assets/siteFavicon.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -47,12 +47,12 @@
 
       <div id="startModal" class="modal">
           <div class="modal-content">
-              <h2>Welcome to Manual Brick Breaker!</h2>
+              <h2>MANUAL BRICK BREAKER</h2>
               <p>Control the paddle with your hand:</p>
               <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
-              <p>🎯 Break all the bricks to advance to the next level</p>
-              <p>⚠️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>
-              <p>Make sure your webcam is enabled and your palm is visible</p>
+              <p>🧱 Break all the bricks to advance to the next level</p>
+              <p>🎚️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>
+              <p>⚠️ Make sure your webcam is enabled and your palm is visible</p>
               <button class="start-button" onclick="startGame()">Start Game</button>
           </div>
       </div>
@@ -91,23 +91,20 @@
       <div id="textBox">
 
           <h2 id="aboutText">MANUAL BRICK BREAKER</h2>
-          <p>Turn videos into pixel art! Use your webcam feed or upload a video, then use the controls to adjust the aesthetic:</p>
-          <ul>
-            <li>Color palette</li>
-            <li>Pixel size</li>
-            <li>Dithering strength -- based on the Bayer dithering algorithm</li>
-            <li>Edge detection strength and color -- based on Sobel edge detection</li>
-          </ul>
-          <p>All processing is done in real-time within your browser, using javascript / webgl shaders / html canvas (<a href="https://github.com/collidingScopes/video-to-pixel-art" rel="noopener" target="_blank">github code</a>).</p>
-          <p>You can export your creations as images or videos to save / share your work.</p>
-          <p>This tool is completely free, open source (MIT license), without any paywalls or premium options. You are welcome to use it for personal or commercial purposes.</p>
-          <p>If you found this tool useful, feel free to buy me a coffee. This would be much appreciated during late-night coding sessions!</p>
+          <p>Play brick breaker the way our ancestors wanted us to -- with our hands!</p>
+          <p>Control the paddle with your hand:</p>
+          <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
+          <p>🧱 Break all the bricks to advance to the next level</p>
+          <p>🎚️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>
+          <p>⚠️ Make sure your webcam is enabled and your palm is visible</p>
+          <p>All processing is done in real-time within your browser, using javascript, html, and mediapipe hand tracking (<a href="https://github.com/collidingScopes/manual-brick-breaker" rel="noopener" target="_blank">github code</a>).</p>
+          <p>This game is free and open source, offered under an MIT license (you can use the code for personal or commercial purposes).</p>
+          <p>If you enjoyed this and are feeling generous, feel free to buy me a coffee. I will continue to build free and open source projects, and this would be much appreciated during late-night coding sessions!</p>
           
           <a href="https://www.buymeacoffee.com/stereoDrift" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png" alt="Buy Me A Coffee"></a>
 
-          <p>If the video export feature does not work for you, please try a free screen-recording tool such as OBS Studio.</p>
-          <p>I do not have access to any of the videos that you upload here, as all processing is done "client-side" (i.e., <b>no videos or images are saved/stored by me — they stay on your computer only</b>).</p>
-          <p>If you enjoyed this, you may be interested in my other free / open source art projects:</p>
+          <p>I do not have access to any of your data or webcam video, as all processing is done "client-side" (i.e., <b>no videos or images are saved/stored by me — they appear on your computer only</b>).</p>
+          <p>If you enjoyed this, you may be interested in my other free / open source projects:</p>
           <ul>
             <li><a href="https://collidingScopes.github.io/ascii" target="_blank" rel="noopener">Video-to-ASCII</a>: turn videos into ASCII pixel art</li>
             <li><a href="https://collidingScopes.github.io/shimmer" target="_blank" rel="noopener">Shape Shimmer</a>: turn photos into funky wave animations</li>
@@ -115,14 +112,14 @@
             <li><a href="https://collidingScopes.github.io/forcefield" target="_blank" rel="noopener">Force-Field Animation</a>: turn photos into particle animations</li>
           </ul>
           
-          <p>Feel free to reach out to discuss, ask questions, or to share your creations! The animations can be easily uploaded to instagram or otherwise -- you can tag me <a href="https://www.instagram.com/stereo.drift/" target="_blank" rel="noopener">@stereo.drift</a> :)</p>
+          <p>Feel free to reach out to discuss, ask questions, or just to say hi! You can find me <a href="https://www.instagram.com/stereo.drift/" target="_blank" rel="noopener">@stereo.drift</a> :)</p>
       </div>
     </div>
 
     <div id="linksDiv">
         <table id="infoMenuTable">
             <tr>
-                <td><button id="gitHubButton"class="socialMediaButton"><a href="https://github.com/collidingScopes/video-to-pixel-art" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a></button></td>
+                <td><button id="gitHubButton"class="socialMediaButton"><a href="https://github.com/collidingScopes/manual-brick-breaker" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i></a></button></td>
                 <td><button id="coffeeButton" class="socialMediaButton"><a href="https://www.buymeacoffee.com/stereoDrift" target="_blank" rel="noopener"><i class="fa-solid fa-heart"></i></a></button></td>
                 <td><button id="instagramButton" class="socialMediaButton"><a href="https://www.instagram.com/stereo.drift/" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i></a></button></td>
                 <td><button id="emailButton" class="socialMediaButton"><a href="mailto:stereodriftvisuals@gmail.com" target="_blank" rel="noopener"><i class="fa-solid fa-envelope"></i></a></button></td>

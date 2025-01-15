@@ -1,7 +1,7 @@
 /*
 Mobile compatability, formatting, responsiveness
-Can lag be reduced, lots of lag when moving hand fast
 Scoreboard / simple database to save high scores
+Write about text, site OG image / properties, github README
 */
 
 let lastTime = 0;

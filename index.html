@@ -34,21 +34,25 @@
           <canvas id="gameCanvas" width="700" height="700"></canvas>
           <video id="videoElement" playsinline></video>
           <div class="stats">
+              <div>Lives: <span id="livesElement">💛💛💛</span></div>
               <div>Level: <span id="levelElement">1</span></div>
               <div>Score: <span id="scoreElement">0</span></div>
               <div>Hits: <span id="hitsElement">0</span></div>
           </div>
-          <div id="levelUpIndicator" class="level-up-indicator">LEVEL UP!</div>
+          <div id="levelUpIndicator" class="level-up-indicator">
+            <p class="level-up-text">LEVEL UP!</p>
+            <p class="level-up-subtitle">speed +10%, paddle size -10%</p>
+          </div>
       </div>
 
       <div id="startModal" class="modal">
           <div class="modal-content">
               <h2>Welcome to Manual Brick Breaker!</h2>
               <p>Control the paddle with your hand:</p>
-              <p>✋ Move your hand left and right in front of your camera</p>
+              <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
               <p>🎯 Break all the bricks to advance to the next level</p>
               <p>⚠️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>
-              <p>Make sure your webcam is enabled and your hand is visible</p>
+              <p>Make sure your webcam is enabled and your palm is visible</p>
               <button class="start-button" onclick="startGame()">Start Game</button>
           </div>
       </div>

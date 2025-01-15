@@ -13,6 +13,29 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    /* background: #141D22; */
+
+    position: relative;
+    /* Create grid pattern background */
+    background-color: #141D22;
+    background-image: 
+        /* Pixel grid */
+        linear-gradient(to right, rgba(74, 74, 143, 0.1) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(74, 74, 143, 0.1) 1px, transparent 1px),
+        /* Diagonal stripes for depth */
+        linear-gradient(45deg, 
+            rgba(74, 74, 143, 0.15) 25%, 
+            transparent 60%, 
+            transparent 90%, 
+            rgba(74, 74, 143, 0.15) 75%);
+    background-size: 
+        20px 20px,  /* For the grid */
+        20px 20px,  /* For the grid */
+        40px 40px;  /* For the diagonal pattern */
+    background-position: 
+        0 0, 
+        0 0,
+        0 0;
 }
 .game-container {
     position: relative;
@@ -37,20 +60,24 @@ body {
     will-change: transform;
 }
 .stats {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    color: #f2c2a4;
-    font-size: 18px;
-    contain: content;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: #f2c2a4;
+  font-size: 18px;
+  contain: content;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
 }
+
 .stats div {
-    background: rgba(12, 8, 22, 0.5);
-    padding: 5px 10px;
-    border-radius: 5px;
+  background: rgba(12, 8, 22, 0.1);
+  padding: 2px;
+  border-radius: 5px;
+}
+#livesElement {
+  letter-spacing: 2px;  /* Add spacing between hearts */
 }
 .modal {
     display: flex;
@@ -63,7 +90,7 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    opacity: 0.9;
+    opacity: 0.95;
 }
 .modal-content {
     background: #2a2a2a;
@@ -129,13 +156,20 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #33FF99;
-    font-size: 48px;
-    font-weight: bold;
     opacity: 0;
-    transition: opacity 0.5s;
-    text-shadow: 0 0 10px rgba(51, 255, 153, 0.5);
+    transition: opacity 1s;
     pointer-events: none;
+    text-align: center;
+}
+.level-up-text {
+  font-size: 52px;
+  color: #33FF99;
+  text-shadow: 0 0 10px rgba(51, 255, 153, 0.5);
+  font-weight: bold;
+}
+.level-up-subtitle{
+  font-size: 18px;
+  color: #c3f2f5;
 }
 
 #notesDiv{
@@ -201,4 +235,9 @@ a, a:visited{
 
 #buyMeACoffeeButton {
   font-size: 10px;
+}
+
+.pixel {
+  background-color: #000;
+  float: left;
 }

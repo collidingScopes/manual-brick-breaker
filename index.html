@@ -3,8 +3,8 @@ To do:
 Split into multiple code files
 Controllable GUI for ball speed, paddle width, paddle movement sensitivity
 Make the game colors / design more aesthetic
-Multiple levels with extra difficulty?
 Mobile testing / functionality / formatting responsiveness
+Add text / BMAC / footer -- see if this breaks formatting -- maybe need to wrap the game container in a div
 -->
 
 <!DOCTYPE html>
@@ -30,14 +30,15 @@ Mobile testing / functionality / formatting responsiveness
             font-family: "IBM Plex Mono", serif;
             font-weight: 400;
             font-style: normal;
+            font-size: 18px;
         }
         .game-container {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 700px;
+            height: 700px;
             contain: strict;
             border: 3px solid #c3f2f5;
-            border-radius: 6px;
+            border-radius: 0px;
         }
         #gameCanvas {
             background: #141D22;
@@ -58,7 +59,7 @@ Mobile testing / functionality / formatting responsiveness
             top: 10px;
             left: 10px;
             color: #f2c2a4;
-            font-size: 16px;
+            font-size: 18px;
             contain: content;
             display: flex;
             flex-direction: column;
@@ -80,6 +81,7 @@ Mobile testing / functionality / formatting responsiveness
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            opacity: 0.9;
         }
         .modal-content {
             background: #2a2a2a;
@@ -157,7 +159,7 @@ Mobile testing / functionality / formatting responsiveness
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+        <canvas id="gameCanvas" width="700" height="700"></canvas>
         <video id="videoElement" playsinline></video>
         <div class="stats">
             <div>Level: <span id="levelElement">1</span></div>
@@ -228,17 +230,17 @@ Mobile testing / functionality / formatting responsiveness
       const INITIAL_PADDLE_WIDTH = 150;
       const PADDLE_HEIGHT = 10;
       const BALL_RADIUS = 7;
-      const BRICK_ROW_COUNT = 1;
+      const BRICK_ROW_COUNT = 3;
       const BRICK_COLUMN_COUNT = 8;
-      const BRICK_WIDTH = 80;
+      const BRICK_WIDTH = 60;
       const BRICK_HEIGHT = 20;
       const BRICK_PADDING = 10;
       const BRICK_OFFSET_TOP = 50;
-      const BRICK_OFFSET_LEFT = 60;
+      const BRICK_OFFSET_LEFT = 70;
       const TOTAL_BRICKS = BRICK_ROW_COUNT * BRICK_COLUMN_COUNT;
 
       // Level progression constants
-      const INITIAL_BALL_SPEED = 6;
+      const INITIAL_BALL_SPEED = 7;
       const LEVEL_SPEED_INCREASE = 1.1; // 10% increase
       const LEVEL_WIDTH_DECREASE = 0.9; // 10% decrease
   
@@ -309,9 +311,9 @@ Mobile testing / functionality / formatting responsiveness
               
               if (results.multiHandLandmarks?.[0]) {
                   const palmX = 1 - results.multiHandLandmarks[0][0].x;
-                  gameState.paddle.x = Math.max(0, 
-                      Math.min(CANVAS_WIDTH - gameState.paddle.width,
-                          (palmX * 1.2 * CANVAS_WIDTH) - (gameState.paddle.width / 2)
+                  gameState.paddle.x = Math.max(-50, 
+                      Math.min(CANVAS_WIDTH - gameState.paddle.width + 50,
+                          (palmX * 1 * CANVAS_WIDTH) - (gameState.paddle.width / 2)
                       )
                   );
   
@@ -522,7 +524,7 @@ Mobile testing / functionality / formatting responsiveness
       function startGame() {
           document.getElementById('startModal').style.display = 'none';
           gameState.modalDismissed = true;
-          video.style.opacity = 0.65;
+          video.style.opacity = 0.6;
       }
   
       // Initialize game

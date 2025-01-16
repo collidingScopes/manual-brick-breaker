@@ -20,3 +20,7 @@ Manual Brick Breaker
 <li><a href="https://collidingScopes.github.io" target="_blank" rel="noopener">Colliding Scopes</a>: turn photos into kaleidoscope animations</li>
 <li><a href="https://collidingScopes.github.io/forcefield" target="_blank" rel="noopener">Force-Field Animation</a>: turn photos into particle animations</li>
 </ul>
+
+License
+=======
+This is an open source project provided under an <a href="https://opensource.org/license/MIT">MIT license</a>

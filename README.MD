@@ -2,12 +2,11 @@ Manual Brick Breaker
 -----
 <img src="assets/siteOGImage2.png">
 <p>Play brick breaker the way our ancestors wanted us to -- with our hands!</p>
-<p>Control the paddle with your hand:</p>
 <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
 <p>🧱 Break all the bricks to advance to the next level</p>
 <p>🎚️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>
 <p>⚠️ Make sure your webcam is enabled and your palm is visible</p>
-<p>All processing is done in real-time within your browser, using javascript, html, and mediapipe hand tracking.</p>
+<p>All processing is done in real-time within your browser. This project is built using javascript, html canvas, and mediapipe hand tracking.</p>
 <p>This game is free and open source, offered under an MIT license (you can use the code for personal or commercial purposes).</p>
 <p>If you enjoyed this and are feeling generous, feel free to buy me a coffee. I will continue to build free and open source projects, and this would be much appreciated during late-night coding sessions!</p>
 

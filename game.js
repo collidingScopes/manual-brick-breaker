@@ -1,6 +1,9 @@
 /*
 Mobile compatability, formatting, responsiveness
 Scoreboard / simple database to save high scores
+Simple site visitor counter?
+Add better tutorial (allow the user to test the movement before starting the game)
+Create intro video (promo / instructions)
 */
 
 let lastTime = 0;
@@ -64,7 +67,8 @@ const gameState = {
         fadeStart: 0
     },
     gameStarted: false,
-    modalDismissed: false
+    modalDismissed: false,
+    gameOver: false,
 };
 
 const bricks = new Float32Array(BRICK_ROW_COUNT * BRICK_COLUMN_COUNT * 3); // x, y, status
@@ -369,7 +373,7 @@ function gameLoop(timestamp) {
       ctx.fillStyle = "#141D22";
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
       
-      if (gameState.gameStarted && gameState.ball.active) {
+      if (gameState.gameStarted && gameState.ball.active && !gameState.gameOver) {
           // Ball physics
           if (gameState.ball.x + gameState.ball.dx > CANVAS_WIDTH - BALL_RADIUS || 
               gameState.ball.x + gameState.ball.dx < BALL_RADIUS) {
@@ -423,6 +427,12 @@ function gameOver() {
   document.getElementById('finalHits').textContent = gameState.stats.hits;
   gameOverModal.style.display = 'flex';
   gameState.gameStarted = false;
+  gameState.gameOver = false;
+}
+
+function closeGameOverModal() {
+  const gameOverModal = document.getElementById('gameOverModal');
+  gameOverModal.style.display = 'none';
 }
 
 function restartGame() {
@@ -466,37 +476,6 @@ function startGame() {
   document.getElementById('startModal').style.display = 'none';
   gameState.modalDismissed = true;
   video.style.opacity = 0.45;
-}
-
-function generateBackgroundPixels(){
-  
-    let gameContainer = document.querySelector(".game-container-div");
-    
-    var grid = 100, //anything over a couple hundred will probably kill it
-      windowWidth = window.innerWidth,
-      windowHeight = window.innerHeight,
-      pW = windowWidth/grid,
-      pH = pW,
-      rows = parseInt(windowHeight/pH);
-    
-    var r = 0;
-    
-    while (r < rows) {
-      var p = 0;
-      while (p < grid) {
-        var tenth = p/grid;
-        if (p < grid/10) {
-          var randomNumber = (Math.random() * tenth);
-        } else {
-          var randomNumber = (Math.random() * tenth) + (tenth - .1);
-        }
-        
-        var opacity = randomNumber.toFixed(2);
-        gameContainer.append("<div style='opacity: "+opacity+"; height: "+pH+"px; width: "+pW+"px' class='pixel'></div>");
-        p++;
-      }
-      r++;
-    }
 }
 
 // Initialize game

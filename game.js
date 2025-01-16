@@ -489,6 +489,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
   });
 });
 
+//site visitor counter
+function cb(response) {
+  document.getElementById('visits').innerText = response.value;
+}
+
 // Initialize game
 updateLivesDisplay();
 initBricks();

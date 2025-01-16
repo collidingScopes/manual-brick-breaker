@@ -241,6 +241,12 @@ h2 {
   font-size: 40px;
 }
 
+#visits {
+  background-color: rgb(95, 95, 95);
+  border-radius: 4px;
+  padding: 3px;
+}
+
 /* Styling for table with github and social links */
 
 #infoMenuTable td {

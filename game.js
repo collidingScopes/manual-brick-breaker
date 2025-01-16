@@ -1,41 +1,53 @@
 /*
 Mobile compatability, formatting (reduce left/right margin -- increase canvas size on screen), responsiveness
-Improve scoreboard (show indicator to user that scores are being fetched / score is being posted, etc.)
 Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
-For high score table -- show message with percentile ranking and position (better than x% of players and tied for 9th position)
+For high score table -- show text with percentile ranking and position (better than x% of players and tied for 9th position)
 */
+
+let screenWidth = window.innerWidth;
+console.log("screen width: "+screenWidth);
+let widthThreshold = 700;
+const CANVAS_WIDTH = screenWidth >= widthThreshold ? 700 : 350;
+const CANVAS_HEIGHT = CANVAS_WIDTH;
+
+const canvas = document.getElementById('gameCanvas');
+canvas.width = CANVAS_WIDTH;
+canvas.height = CANVAS_HEIGHT;
+const ctx = canvas.getContext('2d', { alpha: false });
+
+const video = document.getElementById('videoElement');
+const scoreElement = document.getElementById('scoreElement');
+const levelElement = document.getElementById('levelElement');
+const livesElement = document.getElementById('livesElement');
+const levelUpIndicator = document.getElementById('levelUpIndicator');
 
 let lastTime = 0;
 const FPS = 60;
 const frameDelay = 1000 / FPS;
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d', { alpha: false });
-const video = document.getElementById('videoElement');
-const scoreElement = document.getElementById('scoreElement');
-const hitsElement = document.getElementById('hitsElement');
-const levelElement = document.getElementById('levelElement');
-const livesElement = document.getElementById('livesElement');
-const levelUpIndicator = document.getElementById('levelUpIndicator');
+const VIDEO_WIDTH = screenWidth >= widthThreshold ? 160 : 80;
+const VIDEO_HEIGHT = screenWidth >= widthThreshold ? 120 : 60;
+video.width = VIDEO_WIDTH;
+video.height = VIDEO_HEIGHT;
 
-const CANVAS_WIDTH = canvas.width;
-const CANVAS_HEIGHT = canvas.height;
-const INITIAL_PADDLE_WIDTH = 150;
-const PADDLE_HEIGHT = 15;
-const BALL_RADIUS = 8;
+const INITIAL_PADDLE_WIDTH = screenWidth >= widthThreshold ? 150 : 75;
+const PADDLE_HEIGHT = screenWidth >= widthThreshold ? 15 : 8;
+const BALL_RADIUS = screenWidth >= widthThreshold ? 8 : 6;
 const BRICK_ROW_COUNT = 3;
 const BRICK_COLUMN_COUNT = 8;
-const BRICK_WIDTH = 65;
-const BRICK_HEIGHT = 20;
-const BRICK_PADDING = 8;
-const BRICK_OFFSET_TOP = 50;
-const BRICK_OFFSET_LEFT = 58;
+const BRICK_WIDTH = screenWidth >= widthThreshold ? 65 : 32;
+const BRICK_HEIGHT = screenWidth >= widthThreshold ? 20 : 10;
+const BRICK_PADDING = screenWidth >= widthThreshold ? 8 : 4;
+const BRICK_OFFSET_TOP = screenWidth >= widthThreshold ? 50 : 25;
+const BRICK_OFFSET_LEFT = screenWidth >= widthThreshold ? 58 : 29;
 const INITIAL_LIVES = 3;
+const PADDLE_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 30 : 15;
+const BALL_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 40 : 20;
 
 // Level progression constants
-const INITIAL_BALL_SPEED = 7;
+const INITIAL_BALL_SPEED = screenWidth >= widthThreshold ? 7 : 4;
 const LEVEL_SPEED_INCREASE = 1.1; // 10% increase
 const LEVEL_WIDTH_DECREASE = 0.9; // 10% decrease
 
@@ -46,11 +58,11 @@ const gameState = {
         width: INITIAL_PADDLE_WIDTH,
         height: PADDLE_HEIGHT,
         x: CANVAS_WIDTH / 2 - INITIAL_PADDLE_WIDTH / 2,
-        y: CANVAS_HEIGHT - 30
+        y: CANVAS_HEIGHT - PADDLE_BOTTOM_OFFSET,
     },
     ball: {
         x: CANVAS_WIDTH / 2,
-        y: CANVAS_HEIGHT - 40,
+        y: CANVAS_HEIGHT - BALL_BOTTOM_OFFSET,
         radius: BALL_RADIUS,
         dx: INITIAL_BALL_SPEED,
         dy: -INITIAL_BALL_SPEED,
@@ -59,7 +71,6 @@ const gameState = {
     },
     stats: {
         score: 0,
-        hits: 0,
         bricksRemaining: 0
     },
     notification: {
@@ -399,8 +410,6 @@ function gameLoop(timestamp) {
                   gameState.ball.dx = Math.sin(angle) * speed;
                   gameState.ball.dy = -Math.cos(angle) * speed;
 
-                  gameState.stats.hits++;
-                  hitsElement.textContent = gameState.stats.hits;
               } else if (gameState.ball.y > CANVAS_HEIGHT + BALL_RADIUS) {
                   handleBallMiss();
               }
@@ -421,18 +430,6 @@ function gameLoop(timestamp) {
 
   requestAnimationFrame(gameLoop);
 }
-
-/*
-function gameOver() {
-  const gameOverModal = document.getElementById('gameOverModal');
-  document.getElementById('finalLevel').textContent = gameState.level;
-  document.getElementById('finalScore').textContent = gameState.stats.score;
-  document.getElementById('finalHits').textContent = gameState.stats.hits;
-  gameOverModal.style.display = 'flex';
-  gameState.gameStarted = false;
-  gameState.gameOver = false;
-}
-*/
 
 const HIGHSCORE_URL = 'https://script.google.com/macros/s/AKfycbzlUWmuLiYLPzUoxA0cut6g69zAxA8VNu2J2l22snyamGoBeeOAfR7yfGmROkgwmSUDhA/exec';
 // Fetch high scores from Google Sheets
@@ -475,9 +472,8 @@ async function submitScore(name, score, level) {
 async function handleGameOver() {
     // First show regular game over screen
     const gameOverModal = document.getElementById('gameOverModal');
-    document.getElementById('finalLevel').textContent = gameState.level;
+    document.getElementById('finalLevel').textContent = "Level "+gameState.level;
     document.getElementById('finalScore').textContent = gameState.stats.score;
-    document.getElementById('finalHits').textContent = gameState.stats.hits;
 
     // Show the game over modal
     let highScoreTable = document.querySelector(".high-scores");
@@ -545,8 +541,8 @@ function displayHighScores(scores) {
                     <div class="score-entry ${gameState.stats.score === score[1] ? 'current-score' : ''}">
                         <span class="rank">${index + 1}</span>
                         <span class="name">${score[0]}</span>
-                        <span class="score">${score[1]}</span>
                         <span class="level">Level ${score[2]}</span>
+                        <span class="score">${score[1]}</span>
                     </div>
                 `).join('')}
             </div>
@@ -585,9 +581,7 @@ function restartGame() {
   gameState.ball.dy = -INITIAL_BALL_SPEED;
   
   gameState.stats.score = 0;
-  gameState.stats.hits = 0;
   scoreElement.textContent = '0';
-  hitsElement.textContent = '0';
   
   gameState.notification = {
       text: '',
@@ -604,7 +598,6 @@ function restartGame() {
   initBricks();
   
   document.getElementById('gameOverModal').style.display = 'none';
-  document.getElementById('winModal').style.display = 'none';
   
   gameState.gameStarted = true;
   gameState.modalDismissed = true;

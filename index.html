@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Manual Brick Breaker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -30,13 +31,12 @@
     
     <div class="game-container-div">
       <div class="game-container">
-          <canvas id="gameCanvas" width="700" height="700"></canvas>
+          <canvas id="gameCanvas"></canvas>
           <video id="videoElement" playsinline></video>
           <div class="stats">
               <div>Lives: <span id="livesElement">💛💛💛</span></div>
               <div>Level: <span id="levelElement">1</span></div>
               <div>Score: <span id="scoreElement">0</span></div>
-              <div>Hits: <span id="hitsElement">0</span></div>
           </div>
           <div id="levelUpIndicator" class="level-up-indicator">
             <p class="level-up-text">LEVEL UP!</p>
@@ -70,23 +70,8 @@
                   <div id="finalLevel">1</div>
                   <div class="label">Final Score:</div>
                   <div id="finalScore">0</div>
-                  <div class="label">Total Hits:</div>
-                  <div id="finalHits">0</div>
               </div>
               <p class="loading-text hidden">Loading high scores, please wait...</p>
-              <button class="restart-button" onclick="restartGame()">Play Again</button>
-          </div>
-      </div>
-
-      <div id="winModal" class="win-modal">
-          <div class="modal-content">
-              <h2>Congratulations! You Win! 🏆</h2>
-              <div class="stats-grid">
-                  <div class="label">Final Score:</div>
-                  <div id="winScore">0</div>
-                  <div class="label">Total Hits:</div>
-                  <div id="winHits">0</div>
-              </div>
               <button class="restart-button" onclick="restartGame()">Play Again</button>
           </div>
       </div>

@@ -6,7 +6,7 @@ body {
     font-family: "IBM Plex Mono", serif;
     font-weight: 400;
     font-style: normal;
-    font-size: 18px;
+    font-size: 16px;
 }
 .game-container-div {
     display: flex;
@@ -41,8 +41,8 @@ body {
 }
 .game-container {
     position: relative;
-    width: 700px;
-    height: 700px;
+    /* width: 700px; */
+    /* height: 700px; */
     /* contain: strict; */
     border: 3px solid #c3f2f5;
     border-radius: 0px;
@@ -60,18 +60,17 @@ body {
     position: absolute;
     top: 0px;
     right: 0px;
-    width: 160px;
-    height: 120px;
+    /* width: 160px;
+    height: 120px; */
     border: 2px solid #3a4c4e;
     transform: scaleX(-1);
     will-change: transform;
 }
 .stats {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 5px;
+  left: 5px;
   color: #f2c2a4;
-  font-size: 18px;
   contain: content;
   display: flex;
   flex-direction: column;
@@ -101,7 +100,7 @@ body {
 }
 .modal-content {
     background: #2a2a2a;
-    padding: 25px;
+    padding: 5px 15px;
     border-radius: 10px;
     max-width: 400px;
     color: white;
@@ -110,7 +109,8 @@ body {
 }
 .modal-content h2 {
     margin-top: 0;
-    color: #0095DD;
+    margin-bottom: 8px;
+    color: #f2c2a4;
 }
 .modal-content p {
     margin: 10px 0;
@@ -138,7 +138,7 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 15px;
+    margin-top: 10px;
     font-family: "IBM Plex Mono", serif;
     font-weight: 400;
     font-style: normal;
@@ -147,7 +147,7 @@ body {
 .start-button:hover, .restart-button:hover {
   background: #0f4dea;
 }
-.game-over-modal, .win-modal {
+.game-over-modal {
     display: none;
     position: fixed;
     top: 0;
@@ -158,6 +158,16 @@ body {
     justify-content: center;
     align-items: center;
     z-index: 1000;
+}
+#finalScore {
+  color: #33FF99;
+  font-weight: bold;
+  text-align: center;
+}
+#finalLevel {
+  color: #0095DD;
+  font-weight: bold;
+  text-align: center;
 }
 .close-button {
   position: absolute;
@@ -213,8 +223,8 @@ body {
 }
 
 #notesDiv{
-  width:99vw;
-  /* box-sizing: border-box; */
+  width:98vw;
+  box-sizing: border-box;
   /*overflow: hidden;*/
   /* padding: 10px; */
   display: flex;
@@ -290,14 +300,15 @@ a, a:visited{
 
 /* High score styles */
 .high-scores {
-  margin: 10px 0;
+  margin: 5px 0;
   padding: 15px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 5px;
+  font-size: 0.9em;
 }
 
 .high-scores h3 {
-  margin: 0 0 10px 0;
+  margin: 0 0 6px 0;
   color: #f2c2a4;
 }
 

@@ -197,6 +197,9 @@ body {
   color: #c3f2f5;
 }
 .game-footer-div {
+  display: block;
+}
+.inline {
   display: inline-block;
 }
 .about-link {

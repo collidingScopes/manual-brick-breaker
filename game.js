@@ -1,7 +1,7 @@
 /*
 Mobile compatability, formatting, responsiveness
-Scoreboard / simple database to save high scores
-Simple site visitor counter?
+Improve scoreboard (show indicator to user that scores are being fetched / score is being posted, etc.)
+Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
 */
@@ -288,7 +288,7 @@ function handleBallMiss() {
   
   if (gameState.lives <= 0) {
       gameState.ball.active = false;
-      gameOver();
+      handleGameOver();
   } else {
       // Show notification
       gameState.notification.text = `${gameState.lives} ${gameState.lives === 1 ? 'life' : 'lives'} remaining`;
@@ -420,6 +420,7 @@ function gameLoop(timestamp) {
   requestAnimationFrame(gameLoop);
 }
 
+/*
 function gameOver() {
   const gameOverModal = document.getElementById('gameOverModal');
   document.getElementById('finalLevel').textContent = gameState.level;
@@ -428,6 +429,126 @@ function gameOver() {
   gameOverModal.style.display = 'flex';
   gameState.gameStarted = false;
   gameState.gameOver = false;
+}
+*/
+
+const HIGHSCORE_API_URL = 'https://script.google.com/macros/s/AKfycbxDTEOjq81s1MNLUp4XQ8XBE3_MUE_SqwyNS-1PO2lO4-OguO3ssdueCgeEuw-sJ1Dw/exec';
+
+// Fetch high scores from Google Sheets
+async function getHighScores() {
+    try {
+        const response = await fetch(HIGHSCORE_API_URL);
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        return data.scores;
+    } catch (error) {
+        console.error('Error fetching high scores:', error);
+        return null;
+    }
+}
+
+// Submit a new score to Google Sheets
+async function submitScore(name, score, level) {
+    try {
+        const response = await fetch(HIGHSCORE_API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ 
+                name: name.substring(0, 20), // Limit name length
+                score: score,
+                level: level
+            })
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return true;
+    } catch (error) {
+        console.error('Error submitting score:', error);
+        return false;
+    }
+}
+
+// Handle game over and high score submission
+async function handleGameOver() {
+    // First show regular game over screen
+    const gameOverModal = document.getElementById('gameOverModal');
+    document.getElementById('finalLevel').textContent = gameState.level;
+    document.getElementById('finalScore').textContent = gameState.stats.score;
+    document.getElementById('finalHits').textContent = gameState.stats.hits;
+    
+    // Fetch existing high scores
+    const highScores = await getHighScores();
+    
+    // Check if current score is a high score
+    let isHighScore = false;
+    if (highScores && highScores.length > 0) {
+        isHighScore = highScores.length < 10 || gameState.stats.score > highScores[highScores.length - 1][1];
+    }
+    
+    if (isHighScore) {
+        // Add slight delay so game over screen is visible first
+        setTimeout(() => {
+            const playerName = prompt("You got a high score! Enter your name:", "Player");
+            if (playerName) {
+                submitScore(playerName, gameState.stats.score, gameState.level)
+                    .then(success => {
+                        if (success) {
+                            // Refresh high scores after submission
+                            return getHighScores();
+                        }
+                    })
+                    .then(updatedScores => {
+                        if (updatedScores) {
+                            displayHighScores(updatedScores);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error handling high score:', error);
+                    });
+            }
+        }, 500);
+    }
+    
+    // Show the game over modal
+    gameOverModal.style.display = 'flex';
+    gameState.gameStarted = false;
+    gameState.gameOver = true;
+}
+
+// Display high scores in the game over modal
+function displayHighScores(scores) {
+    if (!scores) return;
+    
+    // Create high scores HTML
+    const highScoresHTML = `
+        <div class="high-scores">
+            <h3>High Scores</h3>
+            <div class="scores-list">
+                ${scores.map((score, index) => `
+                    <div class="score-entry ${gameState.stats.score === score[1] ? 'current-score' : ''}">
+                        <span class="rank">${index + 1}</span>
+                        <span class="name">${score[0]}</span>
+                        <span class="score">${score[1]}</span>
+                        <span class="level">Level ${score[2]}</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    
+    // Find or create high scores container in modal
+    let highScoresContainer = document.querySelector('.high-scores');
+    if (!highScoresContainer) {
+        const modalContent = document.querySelector('#gameOverModal .modal-content');
+        const restartButton = modalContent.querySelector('.restart-button');
+        const container = document.createElement('div');
+        container.innerHTML = highScoresHTML;
+        modalContent.insertBefore(container, restartButton);
+    } else {
+        highScoresContainer.outerHTML = highScoresHTML;
+    }
 }
 
 function closeGameOverModal() {
@@ -462,14 +583,20 @@ function restartGame() {
   gameState.ball.active = true;
   gameState.ball.x = gameState.paddle.x + gameState.paddle.width/2;
   gameState.ball.y = gameState.paddle.y - BALL_RADIUS;
-  
+
+  gameState.gameOver = false;
+
   initBricks();
   
   document.getElementById('gameOverModal').style.display = 'none';
   document.getElementById('winModal').style.display = 'none';
   
-  gameState.gameStarted = false;
+  gameState.gameStarted = true;
   gameState.modalDismissed = true;
+
+  // Give the ball an initial direction
+  gameState.ball.dx = INITIAL_BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
+  gameState.ball.dy = -INITIAL_BALL_SPEED;
 }
 
 function startGame() {
@@ -488,12 +615,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       });
   });
 });
-
-//site visitor counter
-function cb(response) {
-  console.log("retrieve site visitor count");
-  document.getElementById('visits').innerText = response.value;
-}
 
 // Initialize game
 updateLivesDisplay();

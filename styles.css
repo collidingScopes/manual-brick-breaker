@@ -284,7 +284,53 @@ a, a:visited{
   font-size: 10px;
 }
 
-.pixel {
-  background-color: #000;
-  float: left;
+/* High score styles */
+.high-scores {
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.high-scores h3 {
+  margin: 0 0 15px 0;
+  color: #f2c2a4;
+}
+
+.scores-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.score-entry {
+  display: grid;
+  grid-template-columns: 30px 1fr auto auto;
+  gap: 15px;
+  padding: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.score-entry.current-score {
+  background: rgba(51, 255, 153, 0.1);
+  border: 1px solid #33FF99;
+}
+
+.rank {
+  text-align: right;
+  color: #888;
+}
+
+.name {
+  color: #fff;
+}
+
+.score {
+  color: #33FF99;
+}
+
+.level {
+  color: #3399CC;
+  margin-left: 10px;
 }

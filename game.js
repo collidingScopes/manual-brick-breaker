@@ -491,6 +491,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 
 //site visitor counter
 function cb(response) {
+  console.log("retrieve site visitor count");
   document.getElementById('visits').innerText = response.value;
 }
 

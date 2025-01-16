@@ -1,5 +1,5 @@
 /*
-Mobile compatability, formatting, responsiveness
+Mobile compatability, formatting (reduce left/right margin -- increase canvas size on screen), responsiveness
 Improve scoreboard (show indicator to user that scores are being fetched / score is being posted, etc.)
 Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
@@ -142,8 +142,8 @@ async function setupHandTracking() {
           hands.setOptions({
               maxNumHands: 1,
               modelComplexity: 0, // Keep lowest complexity for speed
-              minDetectionConfidence: 0.3, // Lower threshold for faster detection
-              minTrackingConfidence: 0.3, // Lower threshold for smoother tracking
+              minDetectionConfidence: 0.2, // Lower threshold for faster detection
+              minTrackingConfidence: 0.2, // Lower threshold for smoother tracking
           });
 
           hands.onResults((results) => {

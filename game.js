@@ -48,7 +48,7 @@ const PADDLE_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 30 : 15;
 const BALL_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 40 : 20;
 
 // Level progression constants
-const INITIAL_BALL_SPEED = screenWidth >= widthThreshold ? 7 : 5;
+const INITIAL_BALL_SPEED = screenWidth >= widthThreshold ? 7 : 6;
 const LEVEL_SPEED_INCREASE = 1.1; // 10% increase
 const LEVEL_WIDTH_DECREASE = 0.9; // 10% decrease
 

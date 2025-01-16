@@ -478,6 +478,17 @@ function startGame() {
   video.style.opacity = 0.45;
 }
 
+//add smooth scroll behaviour to anchor tag link
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+      });
+  });
+});
+
 // Initialize game
 updateLivesDisplay();
 initBricks();

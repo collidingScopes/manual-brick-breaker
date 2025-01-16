@@ -51,8 +51,8 @@ body {
     will-change: transform;
 }
 #restartButton {
-  margin: 20px 0;
-  padding: 12px 30px;
+  margin: 15px 0;
+  padding: 12px 12px;
   font-size: 18px;
 }
 #videoElement {
@@ -165,7 +165,7 @@ body {
   background: transparent;
   border: none;
   color: #f2c2a4;
-  font-size: 24px;
+  font-size: 32px;
   cursor: pointer;
   padding: 5px 10px;
   line-height: 1;
@@ -267,6 +267,11 @@ a, a:visited{
   max-width: 50px;
   max-height: 50px;
   background-color: transparent;
+}
+
+.x-link {
+  text-decoration: none !important;
+  font-weight: bold;
 }
 
 #buyMeACoffeeButton {

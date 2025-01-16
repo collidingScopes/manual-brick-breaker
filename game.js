@@ -4,6 +4,7 @@ Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
 For high score table -- show text with percentile ranking and position (better than x% of players and tied for 9th position)
+Add button to show high score table (below game canvas)
 */
 
 let screenWidth = window.innerWidth;
@@ -47,7 +48,7 @@ const PADDLE_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 30 : 15;
 const BALL_BOTTOM_OFFSET = screenWidth >= widthThreshold ? 40 : 20;
 
 // Level progression constants
-const INITIAL_BALL_SPEED = screenWidth >= widthThreshold ? 7 : 4;
+const INITIAL_BALL_SPEED = screenWidth >= widthThreshold ? 7 : 5;
 const LEVEL_SPEED_INCREASE = 1.1; // 10% increase
 const LEVEL_WIDTH_DECREASE = 0.9; // 10% decrease
 
@@ -307,7 +308,7 @@ function handleBallMiss() {
       gameState.notification.text = `${gameState.lives} ${gameState.lives === 1 ? 'life' : 'lives'} remaining`;
       gameState.notification.opacity = 1;
       gameState.notification.fadeStart = performance.now();
-      
+
       // Reset ball position but keep playing
       gameState.ball.active = true;
       gameState.ball.x = gameState.paddle.x + gameState.paddle.width/2;
@@ -398,7 +399,7 @@ function gameLoop(timestamp) {
 
           // Paddle collision
           if (gameState.ball.dy > 0 && 
-              gameState.ball.y + gameState.ball.dy > gameState.paddle.y - BALL_RADIUS) {
+              gameState.ball.y + gameState.ball.dy > gameState.paddle.y - (BALL_RADIUS / 2) ) {
               if (gameState.ball.x > gameState.paddle.x && 
                   gameState.ball.x < gameState.paddle.x + gameState.paddle.width) {
                   const hitPoint = (gameState.ball.x - gameState.paddle.x) / gameState.paddle.width;

@@ -4,6 +4,7 @@ Improve scoreboard (show indicator to user that scores are being fetched / score
 Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
+For high score table -- show message with percentile ranking and position (better than x% of players and tied for 9th position)
 */
 
 let lastTime = 0;
@@ -287,6 +288,7 @@ function handleBallMiss() {
   updateLivesDisplay();
   
   if (gameState.lives <= 0) {
+      console.log("game over");
       gameState.ball.active = false;
       handleGameOver();
   } else {
@@ -432,12 +434,11 @@ function gameOver() {
 }
 */
 
-const HIGHSCORE_API_URL = 'https://script.google.com/macros/s/AKfycbxDTEOjq81s1MNLUp4XQ8XBE3_MUE_SqwyNS-1PO2lO4-OguO3ssdueCgeEuw-sJ1Dw/exec';
-
+const HIGHSCORE_URL = 'https://script.google.com/macros/s/AKfycbzlUWmuLiYLPzUoxA0cut6g69zAxA8VNu2J2l22snyamGoBeeOAfR7yfGmROkgwmSUDhA/exec';
 // Fetch high scores from Google Sheets
 async function getHighScores() {
     try {
-        const response = await fetch(HIGHSCORE_API_URL);
+        const response = await fetch(HIGHSCORE_URL);
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
@@ -452,7 +453,7 @@ async function getHighScores() {
 // Submit a new score to Google Sheets
 async function submitScore(name, score, level) {
     try {
-        const response = await fetch(HIGHSCORE_API_URL, {
+        const response = await fetch(HIGHSCORE_URL, {
             method: 'POST',
             body: JSON.stringify({ 
                 name: name.substring(0, 20), // Limit name length
@@ -477,42 +478,56 @@ async function handleGameOver() {
     document.getElementById('finalLevel').textContent = gameState.level;
     document.getElementById('finalScore').textContent = gameState.stats.score;
     document.getElementById('finalHits').textContent = gameState.stats.hits;
-    
+
+    // Show the game over modal
+    let highScoreTable = document.querySelector(".high-scores");
+    if(highScoreTable){
+      highScoreTable.classList.add("hidden");
+    }
+    gameOverModal.style.display = 'flex';
+
+    // Add slight delay so game over screen is visible first
+    let playerName;
+    setTimeout(() => {
+      playerName = prompt("Enter your name for the leaderboard:", "Player");
+    }, 500);
+
     // Fetch existing high scores
+    const loadingText = document.querySelector('.loading-text');
+    loadingText.classList.remove("hidden");
     const highScores = await getHighScores();
-    
+
     // Check if current score is a high score
     let isHighScore = false;
     if (highScores && highScores.length > 0) {
         isHighScore = highScores.length < 10 || gameState.stats.score > highScores[highScores.length - 1][1];
     }
+
+    if (playerName) {
+        submitScore(playerName, gameState.stats.score, gameState.level)
+            .then(success => {
+                if (success) {
+                    // Refresh high scores after submission
+                    return getHighScores();
+                }
+            })
+            .then(updatedScores => {
+                if (updatedScores) {
+                    displayHighScores(updatedScores);
+                    document.querySelector(".high-scores").classList.remove("hidden");
+                    loadingText.classList.add("hidden");
+                }
+            })
+            .catch(error => {
+                console.error('Error handling high score:', error);
+            });
+    }
+
     
     if (isHighScore) {
-        // Add slight delay so game over screen is visible first
-        setTimeout(() => {
-            const playerName = prompt("You got a high score! Enter your name:", "Player");
-            if (playerName) {
-                submitScore(playerName, gameState.stats.score, gameState.level)
-                    .then(success => {
-                        if (success) {
-                            // Refresh high scores after submission
-                            return getHighScores();
-                        }
-                    })
-                    .then(updatedScores => {
-                        if (updatedScores) {
-                            displayHighScores(updatedScores);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error handling high score:', error);
-                    });
-            }
-        }, 500);
+
     }
     
-    // Show the game over modal
-    gameOverModal.style.display = 'flex';
     gameState.gameStarted = false;
     gameState.gameOver = true;
 }
@@ -524,7 +539,7 @@ function displayHighScores(scores) {
     // Create high scores HTML
     const highScoresHTML = `
         <div class="high-scores">
-            <h3>High Scores</h3>
+            <h3>Top 10 High Scores</h3>
             <div class="scores-list">
                 ${scores.map((score, index) => `
                     <div class="score-entry ${gameState.stats.score === score[1] ? 'current-score' : ''}">

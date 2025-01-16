@@ -100,9 +100,9 @@ body {
 }
 .modal-content {
     background: #2a2a2a;
-    padding: 30px;
+    padding: 25px;
     border-radius: 10px;
-    max-width: 500px;
+    max-width: 400px;
     color: white;
     text-align: center;
     contain: content;
@@ -112,7 +112,7 @@ body {
     color: #0095DD;
 }
 .modal-content p {
-    margin: 15px 0;
+    margin: 10px 0;
     line-height: 1.5;
     position: relative;
 }
@@ -120,7 +120,7 @@ body {
     display: grid;
     grid-template-columns: auto auto;
     gap: 10px;
-    margin: 20px 0;
+    margin: 15px 0;
     padding: 15px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 5px;
@@ -137,7 +137,7 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 15px;
     font-family: "IBM Plex Mono", serif;
     font-weight: 400;
     font-style: normal;
@@ -286,14 +286,14 @@ a, a:visited{
 
 /* High score styles */
 .high-scores {
-  margin: 20px 0;
+  margin: 10px 0;
   padding: 15px;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }
 
 .high-scores h3 {
-  margin: 0 0 15px 0;
+  margin: 0 0 10px 0;
   color: #f2c2a4;
 }
 
@@ -333,4 +333,13 @@ a, a:visited{
 .level {
   color: #3399CC;
   margin-left: 10px;
+}
+
+.loading-text {
+  font-size: bold;
+  font-size: 24px;
+}
+
+.hidden {
+  display: none;
 }

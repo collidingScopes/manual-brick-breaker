@@ -141,128 +141,186 @@ async function setupHandTracking() {
   let lastHandPosition = null;
   let noHandFrames = 0;
   const NO_HAND_THRESHOLD = 30;
-  let positionBuffer = new Array(5).fill(null); // Buffer for position smoothing
+  let positionBuffer = new Array(5).fill(null);
   let lastProcessedTime = 0;
-  const PROCESS_INTERVAL = 1000 / 30; // Limit to 30 FPS max
-  
+  const PROCESS_INTERVAL = 1000 / 30;
+  let videoStream = null;
+  let isProcessingFrame = false;
+
+  const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+
+  // Ensure video element is properly configured
+  video.autoplay = true;
+  video.playsInline = true;
+  video.muted = true;
+
   async function initializeHandTracking() {
-      try {
-          hands = new window.Hands({
-              locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-          });
+    try {
+      hands = new window.Hands({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+      });
+      
+      hands.setOptions({
+        maxNumHands: 1,
+        modelComplexity: 0,
+        minDetectionConfidence: 0.2,
+        minTrackingConfidence: 0.2,
+      });
+
+      hands.onResults((results) => {
+        const now = performance.now();
+        if (now - lastProcessedTime < PROCESS_INTERVAL) return;
+        lastProcessedTime = now;
+        
+        if (results.multiHandLandmarks?.[0]) {
+          noHandFrames = 0;
+          const rawX = results.multiHandLandmarks[0][0].x;
+          const palmX = 1.4 - (rawX * 1.8);
           
-          hands.setOptions({
-              maxNumHands: 1,
-              modelComplexity: 0, // Keep lowest complexity for speed
-              minDetectionConfidence: 0.2, // Lower threshold for faster detection
-              minTrackingConfidence: 0.2, // Lower threshold for smoother tracking
-          });
+          positionBuffer.shift();
+          positionBuffer.push(palmX);
+          
+          const weights = [0.1, 0.15, 0.2, 0.25, 0.3];
+          let smoothedX = 0;
+          let totalWeight = 0;
+          
+          for (let i = 0; i < positionBuffer.length; i++) {
+            if (positionBuffer[i] !== null) {
+              smoothedX += positionBuffer[i] * weights[i];
+              totalWeight += weights[i];
+            }
+          }
+          
+          if (totalWeight > 0) {
+            smoothedX /= totalWeight;
+            lastHandPosition = smoothedX;
+            
+            const alpha = 0.5;
+            const currentPaddleX = (gameState.paddle.x + gameState.paddle.width/2) / CANVAS_WIDTH;
+            smoothedX = (alpha * smoothedX) + ((1 - alpha) * currentPaddleX);
+            
+            const targetX = (smoothedX * CANVAS_WIDTH) - (gameState.paddle.width / 2);
+            gameState.paddle.x = Math.max(
+              -50, 
+              Math.min(CANVAS_WIDTH - gameState.paddle.width + 50, targetX)
+            );
 
-          hands.onResults((results) => {
-              const now = performance.now();
-              
-              // Throttle processing to maintain consistent frame rate
-              if (now - lastProcessedTime < PROCESS_INTERVAL) return;
-              lastProcessedTime = now;
-              
-              if (results.multiHandLandmarks?.[0]) {
-                  noHandFrames = 0;
-                  
-                  // Calculate hand position with improved sensitivity
-                  const rawX = results.multiHandLandmarks[0][0].x;
-                  const palmX = 1.4 - (rawX * 1.8);
-                  
-                  // Update position buffer
-                  positionBuffer.shift();
-                  positionBuffer.push(palmX);
-                  
-                  // Calculate smoothed position using weighted average
-                  const weights = [0.1, 0.15, 0.2, 0.25, 0.3]; // More weight to recent positions
-                  let smoothedX = 0;
-                  let totalWeight = 0;
-                  
-                  for (let i = 0; i < positionBuffer.length; i++) {
-                      if (positionBuffer[i] !== null) {
-                          smoothedX += positionBuffer[i] * weights[i];
-                          totalWeight += weights[i];
-                      }
-                  }
-                  
-                  if (totalWeight > 0) {
-                      smoothedX /= totalWeight;
-                      lastHandPosition = smoothedX;
-                      
-                      // Apply exponential smoothing for extra fluidity
-                      const alpha = 0.5; // Smoothing factor
-                      const currentPaddleX = (gameState.paddle.x + gameState.paddle.width/2) / CANVAS_WIDTH;
-                      smoothedX = (alpha * smoothedX) + ((1 - alpha) * currentPaddleX);
-                      
-                      // Update paddle position with improved bounds checking
-                      const targetX = (smoothedX * CANVAS_WIDTH) - (gameState.paddle.width / 2);
-                      gameState.paddle.x = Math.max(
-                          -50, 
-                          Math.min(CANVAS_WIDTH - gameState.paddle.width + 50, targetX)
-                      );
+            video.style.border = "2px solid #3a4c4e";
 
-                      // Reset video border to show tracking is working
-                      video.style.border = "2px solid #3a4c4e";
+            if (!gameState.gameStarted && gameState.modalDismissed) {
+              gameState.gameStarted = true;
+            }
+          }
+        } else {
+          noHandFrames++;
+          if (noHandFrames > NO_HAND_THRESHOLD) {
+            video.style.border = "6px solid rgb(225, 21, 21)";
+          }
+        }
+      });
 
-                      if (!gameState.gameStarted && gameState.modalDismissed) {
-                          gameState.gameStarted = true;
-                      }
-                  }
-              } else {
-                  noHandFrames++;
-                  if (noHandFrames > NO_HAND_THRESHOLD) {
-                      // Visual feedback that tracking is lost
-                      video.style.border = "6px solid rgb(225, 21, 21)";
-                  }
-              }
-          });
-
-          return hands;
-      } catch (error) {
-          console.error('Error initializing hand tracking:', error);
-          return null;
-      }
+      return hands;
+    } catch (error) {
+      console.error('Error initializing hand tracking:', error);
+      return null;
+    }
   }
 
-  // Initialize camera with error handling
-  const camera = new window.Camera(video, {
-      onFrame: async () => {
-          try {
-              if (!hands) {
-                  hands = await initializeHandTracking();
-              }
-              if (hands) {
-                  await hands.send({image: video});
-              }
-          } catch (error) {
-              console.error('Error in camera frame:', error);
-              hands = null; // Reset hands so it will reinitialize
-              // Try to reinitialize after a short delay
-              setTimeout(async () => {
-                  hands = await initializeHandTracking();
-              }, 1000);
-          }
-      },
-      width: 640,
-      height: 480
+  // Firefox-friendly constraints
+  const getConstraints = () => ({
+    video: {
+      width: { min: 320, ideal: 640, max: 1280 },
+      height: { min: 240, ideal: 480, max: 720 },
+      frameRate: { min: 15, ideal: 30, max: 60 },
+      facingMode: "user"
+    }
   });
 
-  // Add error handling for camera start
-  try {
-      await camera.start();
-  } catch (error) {
+  async function startCamera() {
+    try {
+      // Check for permissions first
+      const permission = await navigator.permissions.query({ name: 'camera' });
+      if (permission.state === 'denied') {
+        throw new Error('Camera permission denied');
+      }
+
+      // Get user media stream
+      videoStream = await navigator.mediaDevices.getUserMedia(getConstraints());
+      
+      // Set up video element
+      video.srcObject = videoStream;
+      await new Promise((resolve, reject) => {
+        video.onloadedmetadata = resolve;
+        video.onerror = reject;
+      });
+
+      // Wait for video to start playing
+      await video.play();
+
+      // Initialize hand tracking
+      hands = await initializeHandTracking();
+
+      // Start frame processing loop
+      requestAnimationFrame(processFrame);
+
+      return true;
+    } catch (error) {
       console.error('Error starting camera:', error);
-      // Try to restart camera after a delay
-      setTimeout(async () => {
-          try {
-              await camera.start();
-          } catch (error) {
-              console.error('Failed to restart camera:', error);
-          }
-      }, 2000);
+      throw error;
+    }
+  }
+
+  async function processFrame() {
+    if (!hands || !videoStream || isProcessingFrame) {
+      requestAnimationFrame(processFrame);
+      return;
+    }
+
+    isProcessingFrame = true;
+
+    try {
+      await hands.send({ image: video });
+    } catch (error) {
+      console.error('Error processing frame:', error);
+    }
+
+    isProcessingFrame = false;
+    requestAnimationFrame(processFrame);
+  }
+
+  try {
+    const success = await startCamera();
+    if (!success) {
+      throw new Error('Failed to initialize camera');
+    }
+  } catch (error) {
+    console.error('Setup error:', error);
+    
+    const errorMessage = document.createElement('div');
+    errorMessage.style.position = 'absolute';
+    errorMessage.style.top = '50%';
+    errorMessage.style.left = '50%';
+    errorMessage.style.transform = 'translate(-50%, -50%)';
+    errorMessage.style.color = 'white';
+    errorMessage.style.textAlign = 'center';
+    errorMessage.style.backgroundColor = 'rgba(0,0,0,0.8)';
+    errorMessage.style.padding = '20px';
+    errorMessage.style.borderRadius = '10px';
+    errorMessage.innerHTML = `
+      <p style="color: #ff4444; font-size: 18px; margin-bottom: 15px;">Camera Access Error</p>
+      <p>Unable to access camera. Please ensure:</p>
+      <ul style="text-align: left; margin: 10px 0;">
+        <li>Camera permissions are enabled in Firefox settings</li>
+        <li>Firefox is up to date</li>
+        <li>No other applications are using your camera</li>
+        <li>You're using HTTPS if accessing from a web server</li>
+      </ul>
+      <p style="margin-top: 15px;">
+        Try refreshing the page or checking Firefox's camera permissions at:<br>
+        about:preferences#privacy (scroll to Camera section)
+      </p>
+    `;
+    document.querySelector('.game-container').appendChild(errorMessage);
   }
 }
 

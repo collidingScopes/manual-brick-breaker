@@ -375,3 +375,15 @@ a, a:visited{
   max-width: 300px;
   z-index: 1000;
 }
+
+.percentile-message {
+  font-size: 0.9em;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.high-scores .percentile-message {
+  margin-top: 15px;
+  padding: 10px;
+  background-color: rgba(51, 255, 153, 0.1);
+  border-radius: 5px;
+}

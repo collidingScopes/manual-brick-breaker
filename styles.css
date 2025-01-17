@@ -358,3 +358,20 @@ a, a:visited{
 .hidden {
   display: none;
 }
+
+.hand-tracking-error {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 300px;
+}
+
+.pause-overlay {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 300px;
+  z-index: 1000;
+}

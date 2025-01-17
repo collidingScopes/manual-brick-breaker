@@ -5,6 +5,10 @@ Add better tutorial (allow the user to test the movement before starting the gam
 Create intro video (promo / instructions)
 For high score table -- show text with percentile ranking and position (better than x% of players and tied for 9th position)
 Add button to show high score table (below game canvas)
+Hand detection sometimes lost on Mac (need fallback or retry conncetion to mediapipe?)
+Ability to "skip" to higher levels?
+Load the top 10 high scores earlier (as async function) so that load lag is reduced?
+- can weave in current user's score if needed post-game
 */
 
 let screenWidth = window.innerWidth;
@@ -138,35 +142,108 @@ function drawNotification() {
 
 async function setupHandTracking() {
   let hands;
-  let lastHandPosition = null;
+  // let lastHandPosition = null;
   let noHandFrames = 0;
-  const NO_HAND_THRESHOLD = 30;
+  const NO_HAND_THRESHOLD = 60;
   let positionBuffer = new Array(5).fill(null);
   let lastProcessedTime = 0;
   const PROCESS_INTERVAL = 1000 / 30;
   let videoStream = null;
   let isProcessingFrame = false;
+  // let retryCount = 0;
+  // const MAX_RETRIES = 3;
+  let handTrackingActive = false;
+  let wasGameRunning = false;
+  let pauseOverlay = null;
 
   const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
-  // Ensure video element is properly configured
+  // Configure video element
   video.autoplay = true;
   video.playsInline = true;
   video.muted = true;
 
+  function createPauseOverlay() {
+    pauseOverlay = document.createElement('div');
+    pauseOverlay.className = 'pause-overlay';
+    pauseOverlay.style.position = 'absolute';
+    pauseOverlay.style.top = '50%';
+    pauseOverlay.style.left = '50%';
+    pauseOverlay.style.transform = 'translate(-50%, -50%)';
+    pauseOverlay.style.background = 'rgba(0, 0, 0, 0.8)';
+    pauseOverlay.style.color = 'white';
+    pauseOverlay.style.padding = '20px';
+    pauseOverlay.style.borderRadius = '10px';
+    pauseOverlay.style.zIndex = '1000';
+    pauseOverlay.style.textAlign = 'center';
+    pauseOverlay.style.display = 'none';
+    pauseOverlay.innerHTML = `
+      <p style="color: #ff4444; margin-bottom: 10px;">Hand Tracking Lost</p>
+      <p>Game paused. Please ensure your hand is visible to the camera.</p>
+      <p>The game will resume automatically when hand tracking is restored.</p>
+    `;
+    document.querySelector('.game-container').appendChild(pauseOverlay);
+    return pauseOverlay;
+  }
+
+  function pauseGame() {
+    if (gameState.gameStarted && !gameState.gameOver) {
+      wasGameRunning = true;
+      gameState.gameStarted = false;
+      if (!pauseOverlay) {
+        pauseOverlay = createPauseOverlay();
+      }
+      pauseOverlay.style.display = 'block';
+    }
+  }
+
+  function resumeGame() {
+    if (wasGameRunning && !gameState.gameOver) {
+      gameState.gameStarted = true;
+      wasGameRunning = false;
+      if (pauseOverlay) {
+        pauseOverlay.style.display = 'none';
+      }
+    }
+  }
+
   async function initializeHandTracking() {
     try {
-      hands = new window.Hands({
-        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-      });
-      
+      // Initialize MediaPipe Hands with fallback CDN
+      const mediapipeCDNs = [
+        'https://cdn.jsdelivr.net/npm/@mediapipe/hands/',
+        'https://unpkg.com/@mediapipe/hands/',
+        'https://www.gstatic.com/mediapipe/hands/'
+      ];
+
+      let loadError;
+      for (const cdn of mediapipeCDNs) {
+        try {
+          hands = new window.Hands({
+            locateFile: (file) => `${cdn}${file}`
+          });
+          loadError = null;
+          break;
+        } catch (error) {
+          loadError = error;
+          console.warn(`Failed to load from ${cdn}:`, error);
+          continue;
+        }
+      }
+
+      if (loadError) {
+        throw loadError;
+      }
+
+      // Configure hand tracking options
       hands.setOptions({
         maxNumHands: 1,
         modelComplexity: 0,
-        minDetectionConfidence: 0.2,
-        minTrackingConfidence: 0.2,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
       });
 
+      // Set up results handler with error recovery
       hands.onResults((results) => {
         const now = performance.now();
         if (now - lastProcessedTime < PROCESS_INTERVAL) return;
@@ -193,7 +270,7 @@ async function setupHandTracking() {
           
           if (totalWeight > 0) {
             smoothedX /= totalWeight;
-            lastHandPosition = smoothedX;
+            // lastHandPosition = smoothedX;
             
             const alpha = 0.5;
             const currentPaddleX = (gameState.paddle.x + gameState.paddle.width/2) / CANVAS_WIDTH;
@@ -206,15 +283,22 @@ async function setupHandTracking() {
             );
 
             video.style.border = "2px solid #3a4c4e";
+            handTrackingActive = true;
 
-            if (!gameState.gameStarted && gameState.modalDismissed) {
+            if (!gameState.gameStarted && gameState.modalDismissed && !wasGameRunning) {
               gameState.gameStarted = true;
+            } else if (handTrackingActive && wasGameRunning) {
+              resumeGame();
             }
           }
         } else {
           noHandFrames++;
           if (noHandFrames > NO_HAND_THRESHOLD) {
             video.style.border = "6px solid rgb(225, 21, 21)";
+            if (handTrackingActive) {
+              handTrackingActive = false;
+              pauseGame();
+            }
           }
         }
       });
@@ -226,43 +310,36 @@ async function setupHandTracking() {
     }
   }
 
-  // Firefox-friendly constraints
-  const getConstraints = () => ({
-    video: {
-      width: { min: 320, ideal: 640, max: 1280 },
-      height: { min: 240, ideal: 480, max: 720 },
-      frameRate: { min: 15, ideal: 30, max: 60 },
-      facingMode: "user"
-    }
-  });
-
+  // Enhanced camera initialization
   async function startCamera() {
     try {
-      // Check for permissions first
       const permission = await navigator.permissions.query({ name: 'camera' });
       if (permission.state === 'denied') {
         throw new Error('Camera permission denied');
       }
 
-      // Get user media stream
-      videoStream = await navigator.mediaDevices.getUserMedia(getConstraints());
-      
-      // Set up video element
+      const constraints = {
+        video: {
+          width: { min: 320, ideal: 640, max: 1280 },
+          height: { min: 240, ideal: 480, max: 720 },
+          frameRate: { min: 15, ideal: 30, max: 60 },
+          facingMode: "user"
+        }
+      };
+
+      videoStream = await navigator.mediaDevices.getUserMedia(constraints);
       video.srcObject = videoStream;
+      
       await new Promise((resolve, reject) => {
         video.onloadedmetadata = resolve;
         video.onerror = reject;
       });
 
-      // Wait for video to start playing
       await video.play();
-
-      // Initialize hand tracking
       hands = await initializeHandTracking();
-
-      // Start frame processing loop
+      
+      // Start processing frames
       requestAnimationFrame(processFrame);
-
       return true;
     } catch (error) {
       console.error('Error starting camera:', error);
@@ -295,32 +372,6 @@ async function setupHandTracking() {
     }
   } catch (error) {
     console.error('Setup error:', error);
-    
-    const errorMessage = document.createElement('div');
-    errorMessage.style.position = 'absolute';
-    errorMessage.style.top = '50%';
-    errorMessage.style.left = '50%';
-    errorMessage.style.transform = 'translate(-50%, -50%)';
-    errorMessage.style.color = 'white';
-    errorMessage.style.textAlign = 'center';
-    errorMessage.style.backgroundColor = 'rgba(0,0,0,0.8)';
-    errorMessage.style.padding = '20px';
-    errorMessage.style.borderRadius = '10px';
-    errorMessage.innerHTML = `
-      <p style="color: #ff4444; font-size: 18px; margin-bottom: 15px;">Camera Access Error</p>
-      <p>Unable to access camera. Please ensure:</p>
-      <ul style="text-align: left; margin: 10px 0;">
-        <li>Camera permissions are enabled in Firefox settings</li>
-        <li>Firefox is up to date</li>
-        <li>No other applications are using your camera</li>
-        <li>You're using HTTPS if accessing from a web server</li>
-      </ul>
-      <p style="margin-top: 15px;">
-        Try refreshing the page or checking Firefox's camera permissions at:<br>
-        about:preferences#privacy (scroll to Camera section)
-      </p>
-    `;
-    document.querySelector('.game-container').appendChild(errorMessage);
   }
 }
 

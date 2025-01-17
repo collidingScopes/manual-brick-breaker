@@ -3,15 +3,11 @@ Mobile compatability, formatting (reduce left/right margin -- increase canvas si
 Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
-For high score table -- show text with percentile ranking and position (better than x% of players and tied for 9th position)
 Add button to show high score table (below game canvas)
 Hand detection sometimes lost on Mac (need fallback or retry conncetion to mediapipe?)
 Ability to "skip" to higher levels?
-Load the top 10 high scores earlier (as async function) so that load lag is reduced?
-- can weave in current user's score if needed post-game
 */
 
-// Add these variables at the top level of your game.js file
 let cachedHighScores = null;
 let allScores = null;
 let highScoresFetched = false;
@@ -36,6 +32,7 @@ const levelUpIndicator = document.getElementById('levelUpIndicator');
 let lastTime = 0;
 const FPS = 60;
 const frameDelay = 1000 / FPS;
+let processFrameID;
 
 const VIDEO_WIDTH = screenWidth >= widthThreshold ? 160 : 80;
 const VIDEO_HEIGHT = screenWidth >= widthThreshold ? 120 : 60;
@@ -147,7 +144,6 @@ function drawNotification() {
 
 async function setupHandTracking() {
   let hands;
-  // let lastHandPosition = null;
   let noHandFrames = 0;
   const NO_HAND_THRESHOLD = 60;
   let positionBuffer = new Array(5).fill(null);
@@ -155,8 +151,6 @@ async function setupHandTracking() {
   const PROCESS_INTERVAL = 1000 / 30;
   let videoStream = null;
   let isProcessingFrame = false;
-  // let retryCount = 0;
-  // const MAX_RETRIES = 3;
   let handTrackingActive = false;
   let wasGameRunning = false;
   let pauseOverlay = null;
@@ -344,7 +338,7 @@ async function setupHandTracking() {
       hands = await initializeHandTracking();
       
       // Start processing frames
-      requestAnimationFrame(processFrame);
+      processFrameID = requestAnimationFrame(processFrame);
       return true;
     } catch (error) {
       console.error('Error starting camera:', error);
@@ -364,10 +358,12 @@ async function setupHandTracking() {
       await hands.send({ image: video });
     } catch (error) {
       console.error('Error processing frame:', error);
+      cancelAnimationFrame(processFrameID);
+      await startCamera();
     }
 
     isProcessingFrame = false;
-    requestAnimationFrame(processFrame);
+    processFrameID = requestAnimationFrame(processFrame);
   }
 
   try {
@@ -548,7 +544,6 @@ function gameLoop(timestamp) {
 
 const HIGHSCORE_URL = 'https://script.google.com/macros/s/AKfycbx4u8Gj-15Wl2r1D9O2dk6_AOvbPtW7TcmG7IItjfrJDVUQRk7IS4e9JiVBR5OqQ1c2mw/exec';
 
-// Modified getHighScores function to use cached data
 async function getHighScores() {
   if (!cachedHighScores) {
       // If we haven't cached the scores yet, try to fetch them
@@ -631,7 +626,6 @@ async function handleGameOver() {
   gameState.gameOver = true;
 }
 
-// New function to handle high score logic
 async function handleHighScores(playerName) {
   const loadingText = document.querySelector('.loading-text');
   loadingText.classList.remove("hidden");
@@ -667,8 +661,6 @@ function calculatePercentileRank(currentScore, scores) {
   // Convert current score to number and scores array to numbers
   currentScore = Number(currentScore);
   const scoreValues = scores.map(score => Number(score[1]));
-  console.log(currentScore);
-  console.log(scoreValues);
 
   // Count how many scores are lower than the current score
   const scoresBelow = scoreValues.filter(score => score < currentScore).length;
@@ -694,7 +686,7 @@ function createPercentileMessage(percentile, currentScore) {
   messageDiv.style.borderRadius = '5px';
   messageDiv.style.color = '#33FF99';
   messageDiv.style.fontWeight = 'bold';
-  messageDiv.textContent = `Your score of ${currentScore} is better than ${parseFloat(percentile).toFixed(2)}% of all players`;
+  messageDiv.textContent = `Your score of ${currentScore} is better than ${parseFloat(percentile).toFixed(1)}% of all players`;
   return messageDiv;
 }
 

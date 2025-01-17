@@ -277,8 +277,8 @@ async function setupHandTracking() {
             
             const targetX = (smoothedX * CANVAS_WIDTH) - (gameState.paddle.width / 2);
             gameState.paddle.x = Math.max(
-              -50, 
-              Math.min(CANVAS_WIDTH - gameState.paddle.width + 50, targetX)
+              -65, 
+              Math.min(CANVAS_WIDTH - gameState.paddle.width + 65, targetX)
             );
 
             video.style.border = "2px solid #3a4c4e";

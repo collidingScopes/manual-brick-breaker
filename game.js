@@ -5,7 +5,6 @@ Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
 Add button to show high score table (below game canvas)
-Hand detection sometimes lost on Mac (need fallback or retry conncetion to mediapipe?)
 Ability to "skip" to higher levels?
 */
 
@@ -179,8 +178,9 @@ async function setupHandTracking() {
     pauseOverlay.style.display = 'none';
     pauseOverlay.innerHTML = `
       <p style="color: #ff4444; margin-bottom: 10px;">Hand Tracking Lost</p>
-      <p>Game paused. Please ensure your hand is visible to the camera.</p>
-      <p>The game will resume automatically when hand tracking is restored.</p>
+      <p>Please ensure your palm is visible to the camera.</p>
+      <p>Try moving farther away from the camera and/or tilting your camera down a bit.</p>
+      <p>The game will resume when hand-tracking is restored.</p>
     `;
     document.querySelector('.game-container').appendChild(pauseOverlay);
     return pauseOverlay;

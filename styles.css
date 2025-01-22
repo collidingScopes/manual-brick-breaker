@@ -213,13 +213,15 @@ body {
 .inline {
   display: inline-block;
 }
-.about-link {
+.about-link, .donate-link {
   margin-left: 10px;
   font-size: 1.1em;
   color: #c3f2f5;
+  text-decoration: none; 
 }
-.about-link:visited {
+.about-link:visited, .donate-link:visited {
   color: #c3f2f5;
+  text-decoration: none; 
 }
 
 #notesDiv{

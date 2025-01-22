@@ -2,7 +2,7 @@ Manual Brick Breaker
 =======
 <img src="assets/siteOGImage3.png">
 <p>Play brick breaker the way our ancestors wanted us to -- with our hands!</p>
-<p>Live version: <a href="manual-brick-breaker.netlify.app/" rel="noopener" target="_blank">manual-brick-breaker.netlify.app/</a></p>
+<p>Live version: <a href="https://manual-brick-breaker.netlify.app/" rel="noopener" target="_blank">https://manual-brick-breaker.netlify.app/</a></p>
 <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
 <p>🧱 Break all the bricks to advance to the next level</p>
 <p>🎚️ Each level increases ball speed by 10% and reduces paddle width by 10%</p>

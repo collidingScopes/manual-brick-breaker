@@ -1,6 +1,6 @@
 Manual Brick Breaker
 =======
-<img src="assets/siteOGImage2.png">
+<img src="assets/siteOGImage3.png">
 <p>Play brick breaker the way our ancestors wanted us to -- with our hands!</p>
 <p>✋ Move your hand left/right, keeping your palm in front of your camera</p>
 <p>🧱 Break all the bricks to advance to the next level</p>

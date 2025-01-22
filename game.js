@@ -1,5 +1,6 @@
 /*
-Mobile compatability, formatting (reduce left/right margin -- increase canvas size on screen), responsiveness
+To do:
+Reduce general lag / improve fps, reduce lag when level up text shown
 Show that mediapipe hand tracker is currently loading
 Add better tutorial (allow the user to test the movement before starting the game)
 Create intro video (promo / instructions)
@@ -542,7 +543,7 @@ function gameLoop(timestamp) {
   requestAnimationFrame(gameLoop);
 }
 
-const HIGHSCORE_URL = 'https://script.google.com/macros/s/AKfycbx4u8Gj-15Wl2r1D9O2dk6_AOvbPtW7TcmG7IItjfrJDVUQRk7IS4e9JiVBR5OqQ1c2mw/exec';
+const HIGHSCORE_URL = window.config.HIGHSCORE_URL;
 
 async function getHighScores() {
   if (!cachedHighScores) {
